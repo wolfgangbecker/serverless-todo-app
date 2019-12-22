@@ -10,7 +10,7 @@ export class TodosAccess {
   ) {}
 
   async getAllTodoItems(): Promise<TodoItem[]> {
-    console.log('Getting all groups');
+    console.log('Getting all todos');
 
     const result = await this.docClient.scan({
       TableName: this.todosTable
@@ -18,6 +18,17 @@ export class TodosAccess {
 
     const items = result.Items;
     return items as TodoItem[];
+  }
+
+  async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
+    console.log('Creating todo');
+
+    const result = await this.docClient.put({
+      TableName: this.todosTable,
+      Item: todoItem
+    }).promise();
+
+    return todoItem;
   }
 }
 
