@@ -6,6 +6,7 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-offline
   - serverless-dynamodb-local
+  - serverless-iam-roles-per-function
 
 custom:
   serverless-offline:
@@ -36,6 +37,11 @@ functions:
       - http:
           method: get
           path: todos
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
@@ -43,6 +49,11 @@ functions:
       - http:
           method: post
           path: todos
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   UpdateTodo:
     handler: src/lambda/http/updateTodo.handler
@@ -50,6 +61,11 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   DeleteTodo:
     handler: src/lambda/http/deleteTodo.handler
@@ -57,6 +73,11 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   # TODO: Configure this function
   GenerateUploadUrl:
