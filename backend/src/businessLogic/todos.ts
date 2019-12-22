@@ -3,6 +3,7 @@ import * as uuid from 'uuid'
 import { TodoItem } from '../models/TodoItem';
 import { TodosAccess } from '../dataLayer/todosAccess';
 import { CreateTodoRequest } from '../requests/CreateTodoRequest';
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 
 const groupAccess = new TodosAccess()
 
@@ -21,4 +22,8 @@ export async function createTodoItem(createTodoRequest: CreateTodoRequest): Prom
     dueDate: createTodoRequest.dueDate,
     done: false
   })
+}
+
+export async function updateTodoItem(todoId: string, updateTodoRequest: UpdateTodoRequest): Promise<TodoItem> {
+  return await groupAccess.updateTodoItem(todoId, updateTodoRequest);
 }
