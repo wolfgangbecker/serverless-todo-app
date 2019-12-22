@@ -27,3 +27,7 @@ export async function createTodoItem(createTodoRequest: CreateTodoRequest): Prom
 export async function updateTodoItem(todoId: string, updateTodoRequest: UpdateTodoRequest): Promise<TodoItem> {
   return await groupAccess.updateTodoItem(todoId, updateTodoRequest);
 }
+
+export async function deleteTodoItem(todoId: string): Promise<void> {
+  return await groupAccess.deleteTodoItem(todoId);
+}
