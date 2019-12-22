@@ -10,11 +10,15 @@ export class TodosAccess {
     private readonly todosTable: any = process.env.TODOS_TABLE
   ) {}
 
-  async getAllTodoItems(): Promise<TodoItem[]> {
+  async getAllTodoItems(userId: string): Promise<TodoItem[]> {
     console.log('Getting all todos');
 
-    const result = await this.docClient.scan({
-      TableName: this.todosTable
+    const result = await this.docClient.query({
+      TableName: this.todosTable,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      }
     }).promise();
 
     const items = result.Items;
@@ -32,12 +36,15 @@ export class TodosAccess {
     return todoItem;
   }
 
-  async updateTodoItem(todoId: string, todoUpdate: TodoUpdate): Promise<TodoItem> {
+  async updateTodoItem(userId: string, todoId: string, todoUpdate: TodoUpdate): Promise<TodoItem> {
     console.log('Updating todo:', todoId);
 
     const result = await this.docClient.update({
       TableName: this.todosTable,
-      Key: { todoId },
+      Key: {
+        userId,
+        todoId
+      },
       UpdateExpression: "set #name = :name, dueDate=:dueDate, done=:done",
       ExpressionAttributeValues: {
           ":name": todoUpdate.name,
@@ -53,12 +60,12 @@ export class TodosAccess {
     return result.Attributes as TodoItem;
   }
 
-  async deleteTodoItem(todoId: string): Promise<void> {
+  async deleteTodoItem(userId: string, todoId: string): Promise<void> {
     console.log('Deleting todo:', todoId);
 
     await this.docClient.delete({
       TableName: this.todosTable,
-      Key: { todoId },
+      Key: { userId, todoId },
     }).promise();
   }
 }

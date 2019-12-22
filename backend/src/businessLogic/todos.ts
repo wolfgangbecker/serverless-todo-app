@@ -8,14 +8,14 @@ import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 const groupAccess = new TodosAccess()
 
 export async function getAllTodoItems(): Promise<TodoItem[]> {
-  return groupAccess.getAllTodoItems()
+  return groupAccess.getAllTodoItems("1") // TODO: extract from jwt
 }
 
 export async function createTodoItem(createTodoRequest: CreateTodoRequest): Promise<TodoItem> {
   const todoId = uuid.v4()
 
   return await groupAccess.createTodoItem({
-    userId: "Add user id", // TODO: extract from jwt
+    userId: "1", // TODO: extract from jwt
     todoId,
     createdAt: new Date().toISOString().substring(0, 10),
     name: createTodoRequest.name,
@@ -25,9 +25,9 @@ export async function createTodoItem(createTodoRequest: CreateTodoRequest): Prom
 }
 
 export async function updateTodoItem(todoId: string, updateTodoRequest: UpdateTodoRequest): Promise<TodoItem> {
-  return await groupAccess.updateTodoItem(todoId, updateTodoRequest);
+  return await groupAccess.updateTodoItem("1", todoId, updateTodoRequest);
 }
 
 export async function deleteTodoItem(todoId: string): Promise<void> {
-  return await groupAccess.deleteTodoItem(todoId);
+  return await groupAccess.deleteTodoItem("1", todoId);
 }

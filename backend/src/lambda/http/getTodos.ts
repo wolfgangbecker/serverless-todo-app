@@ -1,5 +1,4 @@
 import 'source-map-support/register'
-import * as AWS from 'aws-sdk';
 import { getAllTodoItems } from "../../businessLogic/todos";
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
