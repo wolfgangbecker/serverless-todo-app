@@ -8,10 +8,17 @@ import { createTodoItem } from '../../businessLogic/todos'
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
-  const result = await createTodoItem(newTodo);
+  try {
+    const result = await createTodoItem(newTodo);
 
-  return {
-    statusCode: 201,
-    body: JSON.stringify(result)
+    return {
+      statusCode: 201,
+      body: JSON.stringify(result)
+    }
+  } catch(error) {
+    return {
+      statusCode: 500,
+      body: error.message
+    }
   }
 }
