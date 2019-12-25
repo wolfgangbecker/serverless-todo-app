@@ -44,6 +44,7 @@ provider:
     apiGateway: true
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
+    AUTH0_CERTIFICATE_URL: https://dev-9ncdqdat.eu.auth0.com/.well-known/jwks.json
 
 functions:
   Auth:

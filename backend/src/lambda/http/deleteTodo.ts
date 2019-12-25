@@ -11,11 +11,19 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
     return {
       statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
       body: ""
     }
   } catch(error) {
     return {
       statusCode: 422,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
       body: error.message
     }
   }
