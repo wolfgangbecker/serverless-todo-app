@@ -4,6 +4,9 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } f
 
 import { getAllTodoItems } from "../../businessLogic/todos";
 import { getUserId } from '../utils';
+import { createLogger } from '../../utils/logger';
+
+const logger = createLogger('getTodos');
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try{
@@ -19,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       body: JSON.stringify(result)
     }
   } catch(error) {
-    console.log("Error:", error.message)
+    logger.error("Error:", error.message)
 
     return {
       statusCode: 500,

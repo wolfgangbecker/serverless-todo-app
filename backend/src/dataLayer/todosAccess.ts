@@ -1,10 +1,13 @@
 import * as AWS from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { integer } from 'aws-sdk/clients/cloudfront';
 
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate';
-import { integer } from 'aws-sdk/clients/cloudfront';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('todosAccess');
 
 const XAWS = AWSXRay.captureAWS(AWS);
 
@@ -22,7 +25,7 @@ export class TodosAccess {
   ) {}
 
   async getAllTodoItems(userId: string): Promise<TodoItem[]> {
-    console.log('Getting all todos');
+    logger.info('Getting all todos')
 
     const result = await this.docClient.query({
       TableName: this.todosTable,
@@ -37,7 +40,7 @@ export class TodosAccess {
   }
 
   async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
-    console.log('Creating todo:', todoItem.todoId);
+    logger.info('Creating todo:', todoItem.todoId)
 
     await this.docClient.put({
       TableName: this.todosTable,
@@ -48,7 +51,7 @@ export class TodosAccess {
   }
 
   async updateTodoItem(userId: string, todoId: string, todoUpdate: TodoUpdate): Promise<TodoItem> {
-    console.log('Updating todo:', todoId);
+    logger.info('Updating todo:', todoId)
 
     const result = await this.docClient.update({
       TableName: this.todosTable,
@@ -56,7 +59,7 @@ export class TodosAccess {
         userId,
         todoId
       },
-      UpdateExpression: "set #name = :name, dueDate=:dueDate, done=:done",
+      UpdateExpression: "set #name=:name, dueDate=:dueDate, done=:done",
       ExpressionAttributeValues: {
           ":name": todoUpdate.name,
           ":dueDate": todoUpdate.dueDate,
@@ -72,7 +75,7 @@ export class TodosAccess {
   }
 
   async deleteTodoItem(userId: string, todoId: string): Promise<void> {
-    console.log('Deleting todo:', todoId);
+    logger.info('Deleting todo:', todoId)
 
     await this.docClient.delete({
       TableName: this.todosTable,
@@ -89,7 +92,7 @@ export class TodosAccess {
   }
 
   async addImageUrl(userId: string, todoId: string): Promise<TodoItem> {
-    console.log("Adding image URL to todo: ", todoId);
+    logger.info("Adding image URL to todo: ", todoId)
 
     const url = `https://${this.bucketName}.s3.amazonaws.com/${todoId}`;
 
@@ -99,7 +102,7 @@ export class TodosAccess {
         userId,
         todoId
       },
-      UpdateExpression: "set #attachmentUrl = :attachmentUrl",
+      UpdateExpression: "set #attachmentUrl=:attachmentUrl",
       ExpressionAttributeValues: {
         ":attachmentUrl": url
       },
@@ -115,7 +118,7 @@ export class TodosAccess {
 
 function createDynamoDBClient() {
   if(process.env.IS_OFFLINE) {
-    console.log('Creating a local DynamoDB instance')
+    logger.info('Creating a local DynamoDB instance');
 
     return new XAWS.DynamoDB.DocumentClient({
       region: 'localhost',
