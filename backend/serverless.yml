@@ -56,6 +56,7 @@ functions:
       - http:
           method: get
           path: todos
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -72,6 +73,7 @@ functions:
       - http:
           method: post
           path: todos
+          cors: true
           reqValidatorName: RequestBodyValidator
           documentation:
             summary: Create todo
@@ -94,6 +96,7 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+          cors: true
           reqValidatorName: RequestBodyValidator
           documentation:
             summary: Update todo
@@ -116,6 +119,7 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -133,9 +137,19 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
+          cors: true
 
 resources:
   Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
