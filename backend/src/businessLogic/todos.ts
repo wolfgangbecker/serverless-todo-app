@@ -31,3 +31,7 @@ export async function updateTodoItem(todoId: string, updateTodoRequest: UpdateTo
 export async function deleteTodoItem(todoId: string): Promise<void> {
   return await groupAccess.deleteTodoItem("1", todoId);
 }
+
+export function generateUploadUrl(todoId: string): string {
+  return groupAccess.generateUploadUrl(todoId);
+}

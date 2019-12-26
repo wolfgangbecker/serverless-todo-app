@@ -45,6 +45,8 @@ provider:
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
     AUTH0_CERTIFICATE_URL: https://dev-9ncdqdat.eu.auth0.com/.well-known/jwks.json
+    IMAGES_S3_BUCKET: serverless-todo-images-123-${self:provider.stage}
+    SIGNED_URL_EXPIRATION: 300
 
 functions:
   Auth:
@@ -131,13 +133,22 @@ functions:
         Resource: '*'
 
   # TODO: Configure this function
-  GenerateUploadUrl:
-    handler: src/lambda/http/generateUploadUrl.handler
+  GetUploadUrl:
+    handler: src/lambda/http/getUploadUrl.handler
     events:
       - http:
           method: post
           path: todos/{todoId}/attachment
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
+      - Effect: Allow
+        Action:
+          - xray:*
+        Resource: '*'
 
 resources:
   Resources:
@@ -173,3 +184,33 @@ resources:
           Ref: ApiGatewayRestApi
         ValidateRequestBody: true
         ValidateRequestParameters: false
+    ImagesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+        Bucket: !Ref ImagesBucket
