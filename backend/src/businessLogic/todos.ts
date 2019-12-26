@@ -32,6 +32,8 @@ export async function deleteTodoItem(userId: string, todoId: string): Promise<vo
   return await groupAccess.deleteTodoItem(userId, todoId);
 }
 
-export function generateUploadUrl(todoId: string): string {
+export async function generateUploadUrl(userId: string, todoId: string): string {
+  await groupAccess.addImageUrl(userId, todoId);
+
   return groupAccess.generateUploadUrl(todoId);
 }

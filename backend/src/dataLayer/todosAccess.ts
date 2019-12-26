@@ -87,6 +87,30 @@ export class TodosAccess {
       Expires: this.urlExpiration
     });
   }
+
+  async addImageUrl(userId: string, todoId: string): Promise<TodoItem> {
+    console.log("Adding image URL to todo: ", todoId);
+
+    const url = `https://${this.bucketName}.s3.amazonaws.com/${todoId}`;
+
+    const result = await this.docClient.update({
+      TableName: this.todosTable,
+      Key: {
+        userId,
+        todoId
+      },
+      UpdateExpression: "set #attachmentUrl = :attachmentUrl",
+      ExpressionAttributeValues: {
+        ":attachmentUrl": url
+      },
+      ExpressionAttributeNames: {
+        "#attachmentUrl": "attachmentUrl"
+      },
+      ReturnValues:"ALL_NEW"
+    }).promise();
+
+    return result.Attributes as TodoItem;
+  }
 }
 
 function createDynamoDBClient() {
