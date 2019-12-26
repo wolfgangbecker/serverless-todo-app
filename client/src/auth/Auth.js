@@ -80,9 +80,9 @@ export default class Auth {
 
   logout() {
     // Remove tokens and expiry time
-    localStorage.setItem('accessToken');
-    localStorage.setItem('idToken');
-    localStorage.setItem('expiresAt');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('idToken');
+    localStorage.removeItem('expiresAt');
 
     // Remove isLoggedIn flag from localStorage
     localStorage.removeItem('isLoggedIn');
